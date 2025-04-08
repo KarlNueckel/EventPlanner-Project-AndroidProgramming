@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "46649778745",
+    "project_id": "eventplanner-androidprog",
+    "storage_bucket": "eventplanner-androidprog.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:46649778745:android:9a46dd8d9c767aac9f23e8",
+        "android_client_info": {
+          "package_name": "edu.utap.eventplanner"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1phl6zcRlWX1YcC8FKrW1VZWq2QyjNx8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
