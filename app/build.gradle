@@ -56,4 +56,10 @@ dependencies {
 
     // viewModels
     implementation 'androidx.fragment:fragment-ktx:1.8.6'
+
+
+    //added
+    // Firebase Firestore (works with the BoM)
+    implementation 'com.google.firebase:firebase-firestore-ktx'
+
 }

@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/nav_posts"
+        android:icon="@drawable/ic_posts"
+        android:title="Posts"/>
+    <item android:id="@+id/nav_rsvps"
+        android:icon="@drawable/ic_rsvp"
+        android:title="Your RSVPs"/>
+    <item android:id="@+id/nav_your_events"
+        android:icon="@drawable/ic_event"
+        android:title="Your Events"/>
+</menu>

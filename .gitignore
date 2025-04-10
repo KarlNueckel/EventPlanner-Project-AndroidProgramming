@@ -29,3 +29,5 @@ local.properties
 # Ignore Firebase config (optional)
 # Uncomment the next line if you don’t want to commit your google-services.json
 # app/google-services.json
+
+org.gradle.launcher.daemon.bootstrap.Gr
