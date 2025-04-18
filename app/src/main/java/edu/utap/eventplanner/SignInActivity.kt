@@ -13,8 +13,18 @@ class SignInActivity : AppCompatActivity() {
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseFirestore.getInstance()
 
+    override fun onSupportNavigateUp(): Boolean {
+        startActivity(Intent(this, StartActivity::class.java))
+        finish()
+        return true
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         binding = ActivitySigninBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -55,5 +65,10 @@ class SignInActivity : AppCompatActivity() {
                     Toast.makeText(this, "Error checking username", Toast.LENGTH_SHORT).show()
                 }
         }
+        binding.backButton.setOnClickListener {
+            startActivity(Intent(this, StartActivity::class.java))
+            finish()
+        }
+
     }
 }
