@@ -15,6 +15,9 @@ import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.DocumentSnapshot
 
 
+import android.view.View
+
+
 
 class EventDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEventDetailBinding
@@ -83,13 +86,42 @@ class EventDetailActivity : AppCompatActivity() {
         }
     }
 
+//    private fun continueSetup() {
+//        val eventId = intent.getStringExtra("eventId")
+//        if (eventId == null) {
+//            //Log.d("EventDetail", "Received eventId: $eventId")
+//
+//            finish()
+//            return
+//        }
+//
+//        loadEvent(eventId)
+//
+//        binding.backButton.setOnClickListener {
+//            finish()
+//        }
+//
+//        binding.rsvpButton.setOnClickListener {
+//            val uid = auth.currentUser?.uid ?: return@setOnClickListener
+//            db.collection("events").document(eventId)
+//                .update("attendees.$uid", true)
+//                .addOnSuccessListener {
+//                    Toast.makeText(this, "RSVP'd!", Toast.LENGTH_SHORT).show()
+//                    loadEvent(eventId)
+//                }
+//        }
+//    }
     private fun continueSetup() {
         val eventId = intent.getStringExtra("eventId")
         if (eventId == null) {
-            //Log.d("EventDetail", "Received eventId: $eventId")
-
             finish()
             return
+        }
+
+        // 👇 Hide RSVP if this is the owner's view
+        val isOwner = intent.getBooleanExtra("isOwner", false)
+        if (isOwner) {
+            binding.rsvpButton.visibility = View.GONE
         }
 
         loadEvent(eventId)
@@ -108,6 +140,7 @@ class EventDetailActivity : AppCompatActivity() {
                 }
         }
     }
+
 
 
     private fun loadEvent(eventId: String) {
