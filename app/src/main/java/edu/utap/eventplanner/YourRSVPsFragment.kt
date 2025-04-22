@@ -16,6 +16,7 @@ class YourRSVPsFragment : Fragment() {
 
     private var _binding: FragmentRsvpsBinding? = null
     private val binding get() = _binding!!
+
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
     private lateinit var adapter: EventAdapter
@@ -30,16 +31,23 @@ class YourRSVPsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         adapter = EventAdapter(onEventClick = { event ->
-            val context = requireContext()
-            val intent = Intent(context, EventDetailActivity::class.java)
-            intent.putExtra("eventId", event.id)
-            intent.putExtra("isOwner", false) // RSVP'd to it but didn’t create it
-            context.startActivity(intent)
+            Intent(requireContext(), EventDetailActivity::class.java).also { intent ->
+                intent.putExtra("eventId", event.id)
+                intent.putExtra("isOwner", false)
+                startActivity(intent)
+            }
         })
 
         binding.rsvpsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.rsvpsRecyclerView.adapter = adapter
 
+        // initial load
+        fetchRSVPEvents()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // refresh the list immediately when returning here
         fetchRSVPEvents()
     }
 
@@ -58,7 +66,11 @@ class YourRSVPsFragment : Fragment() {
                 adapter.setEvents(events)
             }
             .addOnFailureListener {
-                Toast.makeText(requireContext(), "Failed to load RSVP events", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    "Failed to load RSVP events",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
     }
 
@@ -67,4 +79,3 @@ class YourRSVPsFragment : Fragment() {
         _binding = null
     }
 }
-
