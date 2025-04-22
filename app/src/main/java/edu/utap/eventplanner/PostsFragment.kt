@@ -86,6 +86,8 @@ import androidx.core.view.MenuProvider
 import androidx.core.view.MenuHost
 import androidx.lifecycle.Lifecycle
 
+import androidx.core.widget.addTextChangedListener
+
 
 class PostsFragment : Fragment() {
 
@@ -93,6 +95,10 @@ class PostsFragment : Fragment() {
     private val binding get() = _binding!!
     private val db = FirebaseFirestore.getInstance()
     private lateinit var adapter: EventAdapter
+
+
+    private var fullEventsList: List<Event> = emptyList()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -134,6 +140,54 @@ class PostsFragment : Fragment() {
 //                }
 //        }
 //    }
+//override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+//    adapter = EventAdapter(onEventClick = { event ->
+//        val context = requireContext()
+//        val intent = Intent(context, EventDetailActivity::class.java)
+//        intent.putExtra("eventId", event.id)
+//        intent.putExtra("isOwner", false)
+//        context.startActivity(intent)
+//    })
+//
+//    binding.postsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+//    binding.postsRecyclerView.adapter = adapter
+//
+//    val menuHost: MenuHost = requireActivity()
+//    menuHost.addMenuProvider(object : MenuProvider {
+//        override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+//            menuInflater.inflate(R.menu.menu_posts, menu)
+//        }
+//
+//        override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+//            return when (menuItem.itemId) {
+//                R.id.menu_sign_out -> {
+//                    FirebaseAuth.getInstance().signOut()
+//                    val intent = Intent(requireContext(), StartActivity::class.java)
+//                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+//                    startActivity(intent)
+//                    true
+//                }
+//                else -> false
+//            }
+//        }
+//    }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+//
+//    // 👇 Fetch posts
+//    val currentUser = FirebaseAuth.getInstance().currentUser
+//    if (currentUser != null) {
+//        db.collection("events")
+//            .whereNotEqualTo("creatorUid", currentUser.uid)
+//            .get()
+//            .addOnSuccessListener { result ->
+//                val events = result.map { doc ->
+//                    val event = doc.toObject(Event::class.java)
+//                    event.id = doc.id
+//                    event
+//                }
+//                adapter.setEvents(events)
+//            }
+//    }
+//}
 override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     adapter = EventAdapter(onEventClick = { event ->
         val context = requireContext()
@@ -146,7 +200,7 @@ override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     binding.postsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
     binding.postsRecyclerView.adapter = adapter
 
-    // 👇 INSERT THIS HERE
+    // ✅ Sign-out menu
     val menuHost: MenuHost = requireActivity()
     menuHost.addMenuProvider(object : MenuProvider {
         override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -167,20 +221,33 @@ override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         }
     }, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
-    // 👇 Fetch posts
+    // ✅ Fetch all events (not created by current user)
     val currentUser = FirebaseAuth.getInstance().currentUser
     if (currentUser != null) {
         db.collection("events")
             .whereNotEqualTo("creatorUid", currentUser.uid)
             .get()
             .addOnSuccessListener { result ->
-                val events = result.map { doc ->
+                fullEventsList = result.map { doc ->
                     val event = doc.toObject(Event::class.java)
                     event.id = doc.id
                     event
                 }
-                adapter.setEvents(events)
+                adapter.setEvents(fullEventsList)
             }
+    }
+
+    // ✅ Search filter
+    binding.searchBar.addTextChangedListener {
+        val query = it.toString().trim()
+        val filtered = if (query.isEmpty()) {
+            fullEventsList
+        } else {
+            fullEventsList.filter { event ->
+                event.title.contains(query, ignoreCase = true)
+            }
+        }
+        adapter.setEvents(filtered)
     }
 }
 
