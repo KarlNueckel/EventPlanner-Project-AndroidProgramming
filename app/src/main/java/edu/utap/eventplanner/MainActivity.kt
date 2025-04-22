@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
@@ -52,17 +53,24 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_sign_out -> {
-                FirebaseAuth.getInstance().signOut()
-                // back to your StartActivity and clear everything
-                Intent(this, StartActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                }.also(::startActivity)
+                // 1) Show a dialog instead of immediately signing out
+                AlertDialog.Builder(this)
+                    .setTitle("Sign Out")
+                    .setMessage("Are you sure you want to sign out?")
+                    .setPositiveButton("Sign Out") { _, _ ->
+                        // 2) Only here do we actually fire the logout
+                        FirebaseAuth.getInstance().signOut()
+                        Intent(this, StartActivity::class.java)
+                            .apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK }
+                            .also(::startActivity)
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
-
     private fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)

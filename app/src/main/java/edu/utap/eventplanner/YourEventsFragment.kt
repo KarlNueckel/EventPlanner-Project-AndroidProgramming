@@ -1,6 +1,4 @@
 package edu.utap.eventplanner
-
-
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -21,7 +19,6 @@ class YourEventsFragment : Fragment() {
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
     private lateinit var adapter: EventAdapter
-    private val userEvents = mutableListOf<Event>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // needed if you ever use onCreateOptionsMenu, but harmless here
@@ -37,13 +34,6 @@ class YourEventsFragment : Fragment() {
         return binding.root
     }
 
-//override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//    adapter = EventAdapter()
-//    binding.yourEventsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-//    binding.yourEventsRecyclerView.adapter = adapter
-//
-//    fetchUserEvents()
-//}
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         adapter = EventAdapter(onEventClick = { event ->
             val context = requireContext()
@@ -55,27 +45,6 @@ class YourEventsFragment : Fragment() {
 
         binding.yourEventsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.yourEventsRecyclerView.adapter = adapter
-
-            // ────────────────────────────────────────────────────
-            // ✅  Sign‑Out menu (reuses res/menu/menu_posts.xml)
-//            val menuHost: MenuHost = requireActivity()
-//            menuHost.addMenuProvider(object : MenuProvider {
-//                    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-//                            menuInflater.inflate(R.menu.menu_posts, menu)
-//                        }
-//                    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-//                            return when (menuItem.itemId) {
-//                                    R.id.menu_sign_out -> {
-//                                            FirebaseAuth.getInstance().signOut()
-//                                            Intent(requireContext(), StartActivity::class.java).apply {
-//                                                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-//                                                }.also(::startActivity)
-//                                            true
-//                                        }
-//                                    else -> false
-//                                }
-//                        }
-//                }, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
     fetchUserEvents()
     }
@@ -89,9 +58,27 @@ class YourEventsFragment : Fragment() {
             .get()
             .addOnSuccessListener { result ->
                 val newList = result.map { doc ->
-                    val event = doc.toObject(Event::class.java)
-                    event.id = doc.id  // ✅ set the Firestore doc ID
-                    event
+                    val data = doc.data
+
+                    // coerce attendees field to Map<String,Boolean>
+                    val attendeesMap: Map<String, Boolean> = when (val raw = data["attendees"]) {
+                        is Map<*, *> -> raw.entries
+                            .filter { it.key is String }
+                            .associate { it.key as String to (it.value as? Boolean ?: true) }
+                        is List<*>    -> raw.filterIsInstance<String>().associateWith { true }
+                        else          -> emptyMap()
+                    }
+
+                    Event(
+                        id         = doc.id,
+                        title      = data["title"]       as? String ?: "",
+                        description= data["description"] as? String ?: "",
+                        startTime  = data["startTime"]   as? String ?: "",
+                        endTime    = data["endTime"]     as? String ?: "",
+                        location   = data["location"]    as? String ?: "",
+                        creatorUid = data["creatorUid"]  as? String ?: "",
+                        attendees  = attendeesMap
+                    )
                 }
                 adapter.setEvents(newList)
             }
@@ -99,8 +86,6 @@ class YourEventsFragment : Fragment() {
                 Toast.makeText(requireContext(), "Failed to load events", Toast.LENGTH_SHORT).show()
             }
     }
-
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
