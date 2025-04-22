@@ -201,25 +201,25 @@ override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     binding.postsRecyclerView.adapter = adapter
 
     // ✅ Sign-out menu
-    val menuHost: MenuHost = requireActivity()
-    menuHost.addMenuProvider(object : MenuProvider {
-        override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-            menuInflater.inflate(R.menu.menu_posts, menu)
-        }
-
-        override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-            return when (menuItem.itemId) {
-                R.id.menu_sign_out -> {
-                    FirebaseAuth.getInstance().signOut()
-                    val intent = Intent(requireContext(), StartActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                    true
-                }
-                else -> false
-            }
-        }
-    }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+//    val menuHost: MenuHost = requireActivity()
+//    menuHost.addMenuProvider(object : MenuProvider {
+//        override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+//            menuInflater.inflate(R.menu.menu_posts, menu)
+//        }
+//
+//        override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+//            return when (menuItem.itemId) {
+//                R.id.menu_sign_out -> {
+//                    FirebaseAuth.getInstance().signOut()
+//                    val intent = Intent(requireContext(), StartActivity::class.java)
+//                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+//                    startActivity(intent)
+//                    true
+//                }
+//                else -> false
+//            }
+//        }
+//    }, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
     // ✅ Fetch all events (not created by current user)
     val currentUser = FirebaseAuth.getInstance().currentUser

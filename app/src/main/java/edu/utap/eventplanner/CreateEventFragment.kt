@@ -43,7 +43,7 @@ class CreateEventFragment : Fragment() {
                 "endTime" to endTime,
                 "location" to location,
                 "creatorUid" to userId,
-                "attendees" to listOf<String>()
+                "attendees" to emptyMap<String, Boolean>()
             )
 
             db.collection("events").add(event)
