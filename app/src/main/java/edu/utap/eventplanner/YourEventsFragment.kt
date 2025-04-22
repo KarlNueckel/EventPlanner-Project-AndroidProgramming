@@ -1,4 +1,5 @@
 package edu.utap.eventplanner
+
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -19,15 +20,16 @@ class YourEventsFragment : Fragment() {
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
     private lateinit var adapter: EventAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // needed if you ever use onCreateOptionsMenu, but harmless here
+        // harmless unless you actually inflate an options menu
         setHasOptionsMenu(true)
     }
 
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentYourEventsBinding.inflate(inflater, container, false)
@@ -36,19 +38,24 @@ class YourEventsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         adapter = EventAdapter(onEventClick = { event ->
-            val context = requireContext()
-            val intent = Intent(context, EventDetailActivity::class.java)
-            intent.putExtra("eventId", event.id)
-            intent.putExtra("isOwner", true)  // 👈 creator viewing their own event
-            context.startActivity(intent)
+            val intent = Intent(requireContext(), EventDetailActivity::class.java).apply {
+                putExtra("eventId", event.id)
+                putExtra("isOwner", true)
+            }
+            startActivity(intent)
         })
 
         binding.yourEventsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.yourEventsRecyclerView.adapter = adapter
 
-    fetchUserEvents()
+        fetchUserEvents()
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Refresh the list whenever we return from detail/delete/RSVP
+        fetchUserEvents()
+    }
 
     private fun fetchUserEvents() {
         val uid = auth.currentUser?.uid ?: return
@@ -70,25 +77,26 @@ class YourEventsFragment : Fragment() {
                     }
 
                     Event(
-                        id         = doc.id,
-                        title      = data["title"]       as? String ?: "",
-                        description= data["description"] as? String ?: "",
-                        startTime  = data["startTime"]   as? String ?: "",
-                        endTime    = data["endTime"]     as? String ?: "",
-                        location   = data["location"]    as? String ?: "",
-                        creatorUid = data["creatorUid"]  as? String ?: "",
-                        attendees  = attendeesMap
+                        id = doc.id,
+                        title = data["title"]       as? String ?: "",
+                        description = data["description"] as? String ?: "",
+                        startTime = data["startTime"]   as? String ?: "",
+                        endTime = data["endTime"]       as? String ?: "",
+                        location = data["location"]     as? String ?: "",
+                        creatorUid = data["creatorUid"] as? String ?: "",
+                        attendees = attendeesMap
                     )
                 }
+
                 adapter.setEvents(newList)
             }
             .addOnFailureListener {
                 Toast.makeText(requireContext(), "Failed to load events", Toast.LENGTH_SHORT).show()
             }
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 }
-
