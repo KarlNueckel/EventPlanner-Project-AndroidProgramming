@@ -40,31 +40,31 @@ class CreateEventFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            // 2) parse & validate “date + time”
-            val dtFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-            val startDT: LocalDateTime
-            val endDT:   LocalDateTime
-            try {
-                startDT = LocalDateTime.parse(startTime, dtFmt)
-                endDT   = LocalDateTime.parse(endTime,   dtFmt)
-            } catch (e: DateTimeParseException) {
-                Toast.makeText(
-                    requireContext(),
-                    "Date+time must be in format YYYY‑MM‑DD HH:mm (e.g. 2025-04-23 13:45)",
-                    Toast.LENGTH_SHORT
-                ).show()
-                return@setOnClickListener
-            }
-
-            // 3) ensure end is after start
-            if (!endDT.isAfter(startDT)) {
-                Toast.makeText(
-                    requireContext(),
-                    "End must be after start",
-                    Toast.LENGTH_SHORT
-                ).show()
-                return@setOnClickListener
-            }
+//            // 2) parse & validate “date + time”
+//            val dtFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+//            val startDT: LocalDateTime
+//            val endDT:   LocalDateTime
+//            try {
+//                startDT = LocalDateTime.parse(startTime, dtFmt)
+//                endDT   = LocalDateTime.parse(endTime,   dtFmt)
+//            } catch (e: DateTimeParseException) {
+//                Toast.makeText(
+//                    requireContext(),
+//                    "Date+time must be in format YYYY‑MM‑DD HH:mm (e.g. 2025-04-23 13:45)",
+//                    Toast.LENGTH_SHORT
+//                ).show()
+//                return@setOnClickListener
+//            }
+//
+//            // 3) ensure end is after start
+//            if (!endDT.isAfter(startDT)) {
+//                Toast.makeText(
+//                    requireContext(),
+//                    "End must be after start",
+//                    Toast.LENGTH_SHORT
+//                ).show()
+//                return@setOnClickListener
+//            }
 
             // 4) OK! build & save
             val event = hashMapOf(

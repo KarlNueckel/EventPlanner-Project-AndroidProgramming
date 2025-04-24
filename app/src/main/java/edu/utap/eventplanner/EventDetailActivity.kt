@@ -43,7 +43,7 @@ class EventDetailActivity : AppCompatActivity() {
         val eventId = intent.getStringExtra("eventId") ?: run { finish(); return }
         val isOwner = intent.getBooleanExtra("isOwner", false)
 
-        // ▶︎ BACK BUTTON (UI) ◀︎
+        //BACK BUTTON (UI) ︎
         binding.backButton.setOnClickListener {
             setResult(RESULT_CANCELED)
             finish()

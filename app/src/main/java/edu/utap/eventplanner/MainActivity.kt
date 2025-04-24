@@ -43,13 +43,13 @@ class MainActivity : AppCompatActivity() {
             true
         }
     }
-    // ② Inflate our menu resource
+    // Inflate our menu resource
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_posts, menu)
         return true
     }
 
-    // ③ Handle taps on “Sign Out”
+    // Handle taps on “Sign Out”
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_sign_out -> {

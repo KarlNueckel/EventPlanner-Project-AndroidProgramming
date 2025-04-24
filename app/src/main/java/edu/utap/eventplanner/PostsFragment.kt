@@ -29,7 +29,7 @@ class PostsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true) // 👈 enable options menu
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -68,7 +68,7 @@ override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             }
     }
 
-    // ✅ Search filter
+    // search filter
     binding.searchBar.addTextChangedListener {
         val query = it.toString().trim()
         val filtered = if (query.isEmpty()) {
